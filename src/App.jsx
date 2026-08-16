@@ -65,7 +65,7 @@ function EmptyLibrary({ onNew }) {
   )
 }
 
-function ExerciseMenu({ ex, onClose, onHistory, onSearch, onEdit, onDelete }) {
+function ExerciseMenu({ ex, isChallenge, onClose, onHistory, onSearch, onEdit, onDelete }) {
   return (
     <Sheet open={!!ex} onClose={onClose} title="">
       {ex && (
@@ -83,12 +83,16 @@ function ExerciseMenu({ ex, onClose, onHistory, onSearch, onEdit, onDelete }) {
           <button className="menu-i" onClick={onSearch}>
             <Icon n="search" s={20} /> Search this exercise on Google
           </button>
-          <button className="menu-i" onClick={onEdit}>
-            <Icon n="edit" s={20} /> Edit exercise &amp; fields
-          </button>
-          <button className="menu-i dan" onClick={onDelete}>
-            <Icon n="trash" s={20} /> Remove from this day
-          </button>
+          {!isChallenge && (
+            <>
+              <button className="menu-i" onClick={onEdit}>
+                <Icon n="edit" s={20} /> Edit exercise &amp; fields
+              </button>
+              <button className="menu-i dan" onClick={onDelete}>
+                <Icon n="trash" s={20} /> Remove from this day
+              </button>
+            </>
+          )}
         </div>
       )}
     </Sheet>
@@ -217,7 +221,7 @@ function Main({ session }) {
               {tab !== 'programs' && store.programs.length > 1 && <Icon n="chevD" s={17} />}
             </span>
           </div>
-          {tab === 'log' && (
+          {tab === 'log' && !store.activeChallenge && (
             <button className="icon-btn" onClick={() => setAddSheet({ superset: false })}>
               <Icon n="plus" s={22} />
             </button>
@@ -298,6 +302,7 @@ function Main({ session }) {
 
       <ExerciseMenu
         ex={menuEx}
+        isChallenge={!!store.activeChallenge}
         onClose={() => setMenuEx(null)}
         onHistory={() => {
           setHistoryMovement({ id: menuEx.movement_id, name: menuEx.name })

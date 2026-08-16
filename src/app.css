@@ -311,7 +311,7 @@ textarea.inp{resize:vertical;min-height:64px;line-height:1.45;}
 
 /* Sticky so you always know whose workout you're looking at mid-scroll. */
 .pane-who{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:7px;
-  padding:8px 2px 6px;background:var(--bg);
+  padding:8px 14px 6px;background:var(--bg);
   font-size:11px;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;color:var(--tx2);}
 .pane-who .dot{width:7px;height:7px;border-radius:50%;background:var(--acc);flex-shrink:0;}
 .pane.buddy .pane-who .dot{background:#8A63C9;}

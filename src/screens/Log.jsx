@@ -2,7 +2,7 @@
    In a challenge the whole day becomes a swipeable pane per person, so a
    buddy's session reads exactly like your own instead of being squeezed into
    the corner of your input row. */
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Icon } from '../ui'
 import { useLongPress } from '../lib/useLongPress'
 import {
@@ -311,6 +311,30 @@ function BuddyCard({ ex, log, group }) {
 
 export default function LogScreen({ store, onMenu, onHistory, startTimer, startStopwatch, onAdd }) {
   const { program, day, week } = store
+
+  // Keep the panes vertically in step. Without this, scrolling to your fifth
+  // exercise and swiping across lands at the top of the buddy's pane, which
+  // throws away the row alignment the moment you actually need it.
+  const panesRef = useRef(null)
+  const syncing = useRef(false)
+
+  const onPaneScroll = useCallback((e) => {
+    if (syncing.current) return
+    syncing.current = true
+    const top = e.target.scrollTop
+    for (const p of panesRef.current?.querySelectorAll('.pane') || []) {
+      if (p !== e.target && Math.abs(p.scrollTop - top) > 1) p.scrollTop = top
+    }
+    requestAnimationFrame(() => {
+      syncing.current = false
+    })
+  }, [])
+
+  // Re-align when the day changes, so both panes start from the same place.
+  useEffect(() => {
+    for (const p of panesRef.current?.querySelectorAll('.pane') || []) p.scrollTop = 0
+  }, [week, store.dayIdx])
+
   if (!program || !day) return null
 
   const isChallenge = !!store.activeChallenge
@@ -481,8 +505,8 @@ export default function LogScreen({ store, onMenu, onHistory, startTimer, startS
       {participants.length === 0 ? (
         <div className="scroll">{myCards}</div>
       ) : (
-        <div className="panes multi">
-          <div className="pane">
+        <div className="panes multi" ref={panesRef}>
+          <div className="pane" onScroll={onPaneScroll}>
             <div className="pane-who">
               <span className="dot" /> You
             </div>
@@ -490,7 +514,7 @@ export default function LogScreen({ store, onMenu, onHistory, startTimer, startS
           </div>
 
           {participants.map((p) => (
-            <div className="pane buddy" key={p.user_id}>
+            <div className="pane buddy" key={p.user_id} onScroll={onPaneScroll}>
               <div className="pane-who">
                 <span className="dot" /> {p.label}
               </div>
