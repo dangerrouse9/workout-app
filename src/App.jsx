@@ -10,6 +10,7 @@ import LogScreen from './screens/Log'
 import ExerciseForm from './screens/ExerciseForm'
 import HistoryPopup from './screens/History'
 import ProgressScreen from './screens/Progress'
+import ChallengeProgress from './screens/ChallengeProgress'
 import ProgramsScreen from './screens/Programs'
 import ProgramBuilder from './screens/ProgramBuilder'
 import { CreateChallengeSheet, JoinChallengeSheet } from './screens/ChallengeSheets'
@@ -271,16 +272,26 @@ function Main({ session }) {
         />
       )}
 
-      {tab === 'progress' && (
-        <ProgressScreen
-          store={store}
-          onHistory={(ex) => setHistoryMovement({ id: ex.movement_id, name: ex.name })}
-          onJump={(w) => {
-            store.setWeek(w)
-            setTab('log')
-          }}
-        />
-      )}
+      {tab === 'progress' &&
+        (store.activeChallenge ? (
+          <ChallengeProgress
+            store={store}
+            onJump={(w, dayIdx) => {
+              store.setWeek(w)
+              store.setDayIdx(dayIdx)
+              setTab('log')
+            }}
+          />
+        ) : (
+          <ProgressScreen
+            store={store}
+            onHistory={(ex) => setHistoryMovement({ id: ex.movement_id, name: ex.name })}
+            onJump={(w) => {
+              store.setWeek(w)
+              setTab('log')
+            }}
+          />
+        ))}
 
       <div className="tabbar">
         <button className={'tab' + (tab === 'log' ? ' on' : '')} onClick={() => setTab('log')}>

@@ -333,6 +333,38 @@ textarea.inp{resize:vertical;min-height:64px;line-height:1.45;}
 .logdate{font-size:11px;font-weight:700;color:var(--tx3);margin-top:7px;height:16px;line-height:16px;}
 .logdate.today{color:var(--acc-d);}
 
+/* ── challenge progress: every day on one screen ─────── */
+.chal-totals{display:flex;gap:9px;margin-top:8px;}
+.chal-total{flex:1;background:var(--card);border-radius:var(--r-sm);padding:11px 12px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.04);}
+.chal-total-n{font-size:22px;font-weight:800;letter-spacing:-0.5px;color:var(--acc-d);
+  font-variant-numeric:tabular-nums;}
+.chal-total-of{font-size:13px;font-weight:700;color:var(--tx3);letter-spacing:0;}
+.chal-total-who{font-size:11px;font-weight:700;color:var(--tx2);margin-top:1px;}
+
+.chal-head{display:flex;align-items:center;gap:10px;padding:16px 12px 4px;}
+.chal-row{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  background:var(--card);border-radius:var(--r-sm);padding:10px 12px;margin-top:6px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.04);border:1.5px solid transparent;}
+.chal-row:active{background:var(--card2);}
+.chal-row.today{border-color:var(--acc);background:var(--acc-l);}
+.chal-row.future{opacity:0.5;}
+
+.chal-day{width:76px;flex-shrink:0;}
+.chal-day-n{font-size:13px;font-weight:800;color:var(--tx);letter-spacing:-0.2px;}
+.chal-day-d{font-size:10px;font-weight:700;color:var(--tx3);margin-top:1px;}
+.chal-row.today .chal-day-d{color:var(--acc-d);}
+
+.chal-people{flex:1;display:flex;gap:8px;min-width:0;}
+.chal-person{flex:1;min-width:0;}
+.chal-who{font-size:9px;font-weight:800;letter-spacing:0.4px;text-transform:uppercase;color:var(--tx3);}
+.chal-val{font-size:13px;font-weight:700;color:var(--tx);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.chal-val.none{color:var(--tx3);font-weight:600;}
+.chal-val.skip{color:var(--dan);font-style:italic;font-weight:600;}
+.chal-val.partial{color:var(--amb-tx);}
+.chal-val.done{color:var(--acc-d);}
+
 /* ── auth screen ─────────────────────────────────────── */
 .auth{flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 26px calc(var(--hi) + 40px);}
 .auth-mark{width:56px;height:56px;border-radius:16px;background:var(--acc);display:flex;align-items:center;justify-content:center;
