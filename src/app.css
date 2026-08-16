@@ -113,12 +113,12 @@ button{cursor:pointer;border:none;background:none;color:inherit;}
 .in-f{width:100%;border:none;background:none;font-size:17px;font-weight:600;color:var(--tx);outline:none;padding:0;}
 .in-f::placeholder{color:var(--tx3);font-weight:500;}
 .cust-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
-.note-f{width:100%;margin-top:8px;border:1.5px solid var(--line);background:var(--card2);border-radius:var(--r-sm);
+.note-f{display:block;width:100%;margin-top:8px;border:1.5px solid var(--line);background:var(--card2);border-radius:var(--r-sm);
   padding:9px 11px;font-size:14px;color:var(--tx);resize:none;outline:none;line-height:1.45;min-height:38px;}
 .note-f:focus{border-color:var(--acc);background:#fff;}
 .note-f::placeholder{color:var(--tx3);}
-.var-f{width:100%;margin-top:8px;border:1.5px dashed var(--line2);background:transparent;border-radius:var(--r-sm);
-  padding:9px 11px;font-size:13px;font-weight:600;color:var(--tx);outline:none;}
+.var-f{display:block;width:100%;margin-top:8px;border:1.5px dashed var(--line2);background:transparent;border-radius:var(--r-sm);
+  padding:9px 11px;font-size:13px;font-weight:600;color:var(--tx);outline:none;min-height:38px;}
 .var-f:focus{border-color:var(--acc);border-style:solid;background:#fff;}
 .var-f::placeholder{color:var(--tx3);font-weight:600;}
 .lw-var{display:inline-block;font-size:11px;font-weight:800;color:#6A3FAE;background:#F3ECFB;padding:2px 7px;border-radius:6px;margin-left:7px;vertical-align:middle;}
@@ -301,7 +301,13 @@ textarea.inp{resize:vertical;min-height:64px;line-height:1.45;}
 .pane{flex:0 0 100%;scroll-snap-align:start;overflow-y:auto;overflow-x:hidden;
   padding:0 18px calc(var(--hi) + 86px);scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 .pane::-webkit-scrollbar{display:none;}
-.panes.multi .pane{flex:0 0 calc(100% - 32px);}
+/* Tighter gutter and a bigger peek when comparing: the cards are fully
+   outlined, so they don't need much air between them, and showing more of the
+   next one makes the swipe obvious. */
+.panes.multi{padding-left:12px;}
+/* Percentage, not a fixed pixel inset: a fixed peek looks generous on a 375px
+   phone and stingy on a 430px one. This keeps the proportion constant. */
+.panes.multi .pane{flex:0 0 84%;padding-left:6px;padding-right:6px;}
 
 /* Sticky so you always know whose workout you're looking at mid-scroll. */
 .pane-who{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:7px;
@@ -309,7 +315,7 @@ textarea.inp{resize:vertical;min-height:64px;line-height:1.45;}
   font-size:11px;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;color:var(--tx2);}
 .pane-who .dot{width:7px;height:7px;border-radius:50%;background:var(--acc);flex-shrink:0;}
 .pane.buddy .pane-who .dot{background:#8A63C9;}
-.pane-who .when{margin-left:auto;font-weight:700;letter-spacing:0;text-transform:none;color:var(--tx3);}
+
 
 /* A buddy's card: same layout, nothing editable. */
 .ro{background:var(--card2);border-radius:var(--r-sm);padding:7px 10px 8px;}
@@ -317,8 +323,14 @@ textarea.inp{resize:vertical;min-height:64px;line-height:1.45;}
   color:var(--tx3);display:block;margin-bottom:2px;}
 .ro-v{font-size:17px;font-weight:600;color:var(--tx2);}
 .ro-empty{font-size:13px;color:var(--tx3);font-style:italic;padding:2px 0 4px;}
+.ro-var{width:100%;margin-top:8px;border-radius:var(--r-sm);background:var(--bg);
+  padding:9px 11px;font-size:13px;font-weight:600;color:var(--tx2);min-height:38px;}
+.ro-note{width:100%;margin-top:8px;border-radius:var(--r-sm);background:var(--bg);
+  padding:9px 11px;font-size:14px;color:var(--tx2);line-height:1.45;min-height:62px;}
+.ro-var:empty::before,.ro-note:empty::before{content:'—';color:var(--tx3);}
 
-.logdate{font-size:11px;font-weight:700;color:var(--tx3);margin-top:7px;}
+/* Fixed line box so an empty date row is exactly as tall as a filled one. */
+.logdate{font-size:11px;font-weight:700;color:var(--tx3);margin-top:7px;height:16px;line-height:16px;}
 .logdate.today{color:var(--acc-d);}
 
 /* ── auth screen ─────────────────────────────────────── */

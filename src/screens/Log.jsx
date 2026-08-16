@@ -63,7 +63,7 @@ function SupersetTag({ group }) {
   )
 }
 
-function ExerciseCard({ store, ex, week, group, onMenu, onHistory, startTimer, startStopwatch }) {
+function ExerciseCard({ store, ex, week, group, isChallenge, onMenu, onHistory, startTimer, startStopwatch }) {
   const lp = useLongPress(() => onMenu(ex))
   const log = store.getLog(ex.id, week) || {}
   const ref = store.lastLoggedFor(ex, week)
@@ -122,42 +122,43 @@ function ExerciseCard({ store, ex, week, group, onMenu, onHistory, startTimer, s
         </button>
       </div>
 
-      {ref ? (
-        <div className="lastwk" onClick={() => onHistory(ex)}>
-          <div className="lw-icn">
-            <Icon n="history" s={15} />
-          </div>
-          <div className="lw-body">
-            <div className="lw-k">
-              Last logged ·{' '}
-              {ref.program.id !== store.program?.id && `${ref.program.name} · `}
-              Week {ref.week}
+      {!isChallenge &&
+        (ref ? (
+          <div className="lastwk" onClick={() => onHistory(ex)}>
+            <div className="lw-icn">
+              <Icon n="history" s={15} />
             </div>
-            {refSkip ? (
-              <div className="lw-v skip">Skipped</div>
-            ) : (
-              <div className="lw-v">
-                {ref.log.sets}×{ref.log.reps}
-                {ref.log.weight && <span className="em"> @ {ref.log.weight}</span>}
-                {ref.log.variation && <span className="lw-var">{ref.log.variation}</span>}
+            <div className="lw-body">
+              <div className="lw-k">
+                Last logged ·{' '}
+                {ref.program.id !== store.program?.id && `${ref.program.name} · `}
+                Week {ref.week}
               </div>
-            )}
-            {ref.log.note && <div className="lw-note">{ref.log.note}</div>}
+              {refSkip ? (
+                <div className="lw-v skip">Skipped</div>
+              ) : (
+                <div className="lw-v">
+                  {ref.log.sets}×{ref.log.reps}
+                  {ref.log.weight && <span className="em"> @ {ref.log.weight}</span>}
+                  {ref.log.variation && <span className="lw-var">{ref.log.variation}</span>}
+                </div>
+              )}
+              {ref.log.note && <div className="lw-note">{ref.log.note}</div>}
+            </div>
+            {trend === 'up' && <span className="lw-trend up">↑ up</span>}
           </div>
-          {trend === 'up' && <span className="lw-trend up">↑ up</span>}
-        </div>
-      ) : (
-        <div className="lastwk">
-          <div className="lw-icn">
-            <Icon n="history" s={15} />
-          </div>
-          <div className="lw-body">
-            <div className="lw-v" style={{ color: 'var(--tx3)', fontWeight: 600 }}>
-              No prior data — first time logging
+        ) : (
+          <div className="lastwk">
+            <div className="lw-icn">
+              <Icon n="history" s={15} />
+            </div>
+            <div className="lw-body">
+              <div className="lw-v" style={{ color: 'var(--tx3)', fontWeight: 600 }}>
+                No prior data — first time logging
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        ))}
 
       <div className="inwrap">
         <div className="in-grid">
@@ -229,9 +230,11 @@ function ExerciseCard({ store, ex, week, group, onMenu, onHistory, startTimer, s
           onBlur={(e) => commit('note', e.target.value)}
         />
 
-        {log.logged_on && (
-          <div className={'logdate' + (isToday(log.logged_on) ? ' today' : '')}>
-            Logged {isToday(log.logged_on) ? 'today' : formatShortDate(log.logged_on)}
+        {(log.logged_on || isChallenge) && (
+          <div className={'logdate' + (log.logged_on && isToday(log.logged_on) ? ' today' : '')}>
+            {log.logged_on
+              ? `Logged ${isToday(log.logged_on) ? 'today' : formatShortDate(log.logged_on)}`
+              : ''}
           </div>
         )}
 
@@ -275,42 +278,32 @@ function BuddyCard({ ex, log, group }) {
         </div>
       </div>
 
-      <div className="inwrap" style={{ paddingTop: 2 }}>
-        {!log || (!log.sets && !log.reps && !log.weight && !log.note) ? (
-          <div className="ro-empty">Nothing logged yet.</div>
-        ) : skipped ? (
-          <div className="lw-v skip">Skipped</div>
-        ) : (
-          <>
-            <div className="in-grid">
-              <div className="ro">
-                <span className="ro-k">Sets</span>
-                <div className="ro-v">{log.sets || '—'}</div>
-              </div>
-              <div className="ro">
-                <span className="ro-k">Reps</span>
-                <div className="ro-v">{log.reps || '—'}</div>
-              </div>
-              <div className="ro">
-                <span className="ro-k">Weight</span>
-                <div className="ro-v">{log.weight || '—'}</div>
-              </div>
-            </div>
-            {log.variation && (
-              <div style={{ marginTop: 8 }}>
-                <span className="hist-var" style={{ marginLeft: 0 }}>
-                  {log.variation}
-                </span>
-              </div>
-            )}
-            {log.note && <div className="lw-note" style={{ marginTop: 8 }}>{log.note}</div>}
-            {log.logged_on && (
-              <div className={'logdate' + (isToday(log.logged_on) ? ' today' : '')}>
-                Logged {isToday(log.logged_on) ? 'today' : formatShortDate(log.logged_on)}
-              </div>
-            )}
-          </>
-        )}
+      <div className="inwrap">
+        <div className="in-grid">
+          <div className="ro">
+            <span className="ro-k">Sets</span>
+            <div className="ro-v">{skipped ? '—' : log?.sets || '—'}</div>
+          </div>
+          <div className="ro">
+            <span className="ro-k">Reps</span>
+            <div className="ro-v">{skipped ? '—' : log?.reps || '—'}</div>
+          </div>
+          <div className="ro">
+            <span className="ro-k">Weight</span>
+            <div className="ro-v">{skipped ? '—' : log?.weight || '—'}</div>
+          </div>
+        </div>
+
+        {/* Mirrors the variation input and note textarea opposite, so the two
+            cards are the same height and their rows read straight across. */}
+        <div className="ro-var">{log?.variation || ''}</div>
+        <div className="ro-note">{skipped ? 'Skipped' : log?.note || ''}</div>
+
+        <div className={'logdate' + (log?.logged_on && isToday(log.logged_on) ? ' today' : '')}>
+          {log?.logged_on
+            ? `Logged ${isToday(log.logged_on) ? 'today' : formatShortDate(log.logged_on)}`
+            : ''}
+        </div>
       </div>
     </div>
   )
@@ -365,7 +358,7 @@ export default function LogScreen({ store, onMenu, onHistory, startTimer, startS
           Tap below to add your first one.
         </div>
       )}
-      {day.exercises.length > 0 && <LpHint />}
+      {day.exercises.length > 0 && !isChallenge && <LpHint />}
 
       {day.exercises.map((ex, i) => (
         <ExerciseCard
@@ -374,6 +367,7 @@ export default function LogScreen({ store, onMenu, onHistory, startTimer, startS
           ex={ex}
           week={week}
           group={groupMeta[i]}
+          isChallenge={isChallenge}
           onMenu={onMenu}
           onHistory={onHistory}
           startTimer={startTimer}
@@ -491,7 +485,6 @@ export default function LogScreen({ store, onMenu, onHistory, startTimer, startS
           <div className="pane">
             <div className="pane-who">
               <span className="dot" /> You
-              {slotDate && <span className="when">{formatShortDate(slotDate)}</span>}
             </div>
             {myCards}
           </div>
