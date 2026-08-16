@@ -1,0 +1,22 @@
+node_modules
+dist
+dist-ssr
+dev-dist
+*.local
+
+.env
+.env.*
+!.env.example
+
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# The prototype's seed file holds real training notes. It was the one-time
+# migration source and the data now lives in Supabase; no need to publish it.
+design_handoff_workout_app/design_reference/src/seed.js
