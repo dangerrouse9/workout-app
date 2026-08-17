@@ -326,7 +326,9 @@ export default function LogScreen({ store, onMenu, onHistory, startTimer, startS
     syncing.current = true
     const top = e.target.scrollTop
     for (const p of panesRef.current?.querySelectorAll('.pane') || []) {
-      if (p !== e.target && Math.abs(p.scrollTop - top) > 1) p.scrollTop = top
+      if (p === e.target) continue
+      const target = Math.min(top, Math.max(0, p.scrollHeight - p.clientHeight))
+      if (Math.abs(p.scrollTop - target) > 1) p.scrollTop = target
     }
     requestAnimationFrame(() => {
       syncing.current = false
