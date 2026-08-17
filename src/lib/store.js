@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as db from './db'
 import { supabase } from './supabase'
 import { buddyLogsFor } from './challenges'
-import { norm, hasData, todayISO, dateForSlot } from './helpers'
+import { norm, hasData, todayISO, dateForSlot, cyclePeriod } from './helpers'
 
 const VIEW_KEY = 'wt_view' // per-device view state, deliberately not in the database
 
@@ -216,8 +216,8 @@ export function useStore() {
   const linearDay = (week - 1) * daysPerWeek + dayIdx + 1
 
   const slotDate = useCallback(
-    (wk = week, di = dayIdx) => dateForSlot(program?.starts_on, wk, di),
-    [program?.starts_on, week, dayIdx],
+    (wk = week, di = dayIdx) => dateForSlot(program?.starts_on, wk, di, daysPerWeek),
+    [program?.starts_on, week, dayIdx, daysPerWeek],
   )
 
   /** Move forward or back one day, rolling over week boundaries. */
@@ -239,9 +239,9 @@ export function useStore() {
     const now = new Date(`${todayISO()}T00:00:00`)
     const offset = Math.round((now - start) / 86400000)
     if (offset < 0) return false
-    // Weeks are seven days; a training week may not fill all of them.
-    const wk = Math.floor(offset / 7) + 1
-    const di = offset % 7
+    const period = cyclePeriod(daysPerWeek)
+    const wk = Math.floor(offset / period) + 1
+    const di = offset % period
     if (wk > program.weeks || di >= daysPerWeek) return false
     patchView({ week: wk, dayIdx: di })
     return true

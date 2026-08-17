@@ -41,16 +41,22 @@ export function todayISO() {
 }
 
 /**
- * The calendar date a slot falls on, given the program's start date.
+ * How many calendar days one cycle of the schedule spans.
  *
- * A week is always seven calendar days, whatever the training week contains.
- * Counting by days-per-week instead would compress "3 days a week for 2 weeks"
- * into six consecutive dates, so week 2 would start the day after week 1.
+ * A weekly schedule advances seven days per week even if it only trains three
+ * of them — counting by days-per-week would compress "3 days a week for 2
+ * weeks" into six consecutive dates. A straight run ("15 days") is stored as a
+ * single cycle of fifteen days, where the period is the run itself.
  */
-export function dateForSlot(startsOn, week, dayIndex) {
+export function cyclePeriod(daysPerWeek) {
+  return Math.max(7, daysPerWeek || 7)
+}
+
+/** The calendar date a slot falls on, given the program's start date. */
+export function dateForSlot(startsOn, week, dayIndex, daysPerWeek) {
   if (!startsOn) return null
   const d = new Date(`${startsOn}T00:00:00`)
-  d.setDate(d.getDate() + (week - 1) * 7 + dayIndex)
+  d.setDate(d.getDate() + (week - 1) * cyclePeriod(daysPerWeek) + dayIndex)
   return d
 }
 

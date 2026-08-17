@@ -12,7 +12,7 @@ const KICKER = {
   margin: '16px 2px 8px',
 }
 
-function ChallengeCard({ challenge, memberCount, isActive, isOwner, onOpen, onCopyCode, copied, onLeave }) {
+function ChallengeCard({ challenge, memberCount, totalDays, isActive, isOwner, onOpen, onCopyCode, copied, onLeave }) {
   return (
     <div className="exc" style={{ marginTop: 0, marginBottom: 11, padding: '14px 15px' }} onClick={onOpen}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
@@ -24,7 +24,7 @@ function ChallengeCard({ challenge, memberCount, isActive, isOwner, onOpen, onCo
         )}
       </div>
       <div className="exc-meta" style={{ marginTop: 8 }}>
-        <span className="tag">{challenge.weeks} weeks</span>
+        <span className="tag">{totalDays ? `${totalDays} days` : `${challenge.weeks} weeks`}</span>
         <span className="tag">
           {memberCount} {memberCount === 1 ? 'person' : 'people'}
         </span>
@@ -222,6 +222,13 @@ export default function ProgramsScreen({
           key={c.id}
           challenge={c}
           memberCount={store.members.filter((m) => m.challenge_id === c.id).length}
+          totalDays={(() => {
+            const mine = store.members.find(
+              (m) => m.challenge_id === c.id && m.user_id === store.userId,
+            )
+            const prog = store.programs.find((p) => p.id === mine?.program_id)
+            return prog ? prog.weeks * prog.days.length : null
+          })()}
           isActive={store.members.some(
             (m) => m.challenge_id === c.id && m.program_id === store.program?.id,
           )}

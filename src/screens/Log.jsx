@@ -345,6 +345,12 @@ export default function LogScreen({ store, onMenu, onHistory, startTimer, startS
   const bench = store.isBench(day.id, week)
   const slotDate = store.slotDate()
 
+  // A challenge whose days are all the same names them Mon–Sun or Day 1–N,
+  // which the date already tells you. A custom name means the day is its own
+  // session and is worth showing.
+  const GENERIC_DAY = /^(mon|tue|wed|thu|fri|sat|sun|day\s*\d+)$/i
+  const namedDay = isChallenge && !GENERIC_DAY.test((day.name || '').trim()) ? day.name.trim() : ''
+
   // Per-card superset metadata: which lettered group, position within it, and
   // whether it follows straight on from the card above — which is what makes
   // the boundary between two adjacent supersets visible. Exercises flagged as
@@ -453,7 +459,9 @@ export default function LogScreen({ store, onMenu, onHistory, startTimer, startS
                 </span>
               </div>
               <div className={'wk-sub' + (isToday(slotDate) ? ' wk-cur' : '')}>
-                {isToday(slotDate) ? 'Today' : formatShortDate(slotDate) || dayPill(day)}
+                {[namedDay, isToday(slotDate) ? 'Today' : formatShortDate(slotDate)]
+                  .filter(Boolean)
+                  .join(' · ') || dayPill(day)}
               </div>
             </>
           ) : (
