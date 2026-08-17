@@ -1,8 +1,8 @@
 /* Progress.jsx — the all-weeks matrix for the active program's selected day.
    One horizontally scrolling strip per exercise is the whole point: it's how
    you compare a movement week over week to pick the next load. */
-import { Icon } from '../ui'
-import { dayPill, isSkipped } from '../lib/helpers'
+import { Icon, DayBar } from '../ui'
+import { isSkipped } from '../lib/helpers'
 
 export default function ProgressScreen({ store, onHistory, onJump }) {
   const { program, day, week } = store
@@ -12,17 +12,7 @@ export default function ProgressScreen({ store, onHistory, onJump }) {
 
   return (
     <>
-      <div className="daybar">
-        {program.days.map((d, i) => (
-          <button
-            key={d.id}
-            className={'pill' + (i === store.dayIdx ? ' on' : '')}
-            onClick={() => store.setDayIdx(i)}
-          >
-            {dayPill(d)}
-          </button>
-        ))}
-      </div>
+      <DayBar days={program.days} activeIndex={store.dayIdx} onSelect={store.setDayIdx} />
 
       <div style={{ padding: '10px 18px 0', fontSize: 12, color: 'var(--tx2)', fontWeight: 600 }}>
         {day.name} · swipe each row to see every week →

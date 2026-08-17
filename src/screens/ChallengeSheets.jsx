@@ -4,7 +4,7 @@
    Either way the rules are the same — fixed once created, one invite code,
    everyone keeps a private copy. */
 import { useState } from 'react'
-import { Icon, Sheet, Toggle } from '../ui'
+import { Icon, Sheet, Toggle, NumField } from '../ui'
 import { createChallenge, joinChallenge } from '../lib/challenges'
 import { todayISO, formatShortDate } from '../lib/helpers'
 
@@ -32,33 +32,6 @@ function NameField({ value, onChange }) {
       <div className="field-hint">
         This labels your column for everyone else. Only people in this challenge see it.
       </div>
-    </div>
-  )
-}
-
-/** Numeric field that tolerates being empty while you type. */
-function NumField({ id, label, value, onChange, min, max }) {
-  const [text, setText] = useState(String(value))
-  return (
-    <div className="field">
-      <label htmlFor={id}>{label}</label>
-      <input
-        id={id}
-        className="inp"
-        inputMode="numeric"
-        value={text}
-        onChange={(e) => {
-          const raw = e.target.value.replace(/[^0-9]/g, '')
-          setText(raw)
-          const n = parseInt(raw, 10)
-          if (n >= min && n <= max) onChange(n)
-        }}
-        onBlur={() => {
-          const n = Math.max(min, Math.min(max, parseInt(text, 10) || min))
-          setText(String(n))
-          onChange(n)
-        }}
-      />
     </div>
   )
 }

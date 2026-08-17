@@ -4,6 +4,7 @@ import { useStore } from './lib/store'
 import { useTimer } from './lib/useTimer'
 import { buildExport, supersetGroupsFor } from './lib/helpers'
 import { useConfirm } from './lib/useConfirm'
+import { useCopyToClipboard } from './lib/useCopyToClipboard'
 import { Icon, Sheet } from './ui'
 import Auth, { NewPassword } from './screens/Auth'
 import LogScreen from './screens/Log'
@@ -172,7 +173,7 @@ function Main({ session }) {
   const [builder, setBuilder] = useState(null) // { program } | { program: null }
   const [exportText, setExportText] = useState(null)
   const [switcher, setSwitcher] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const [copied, copy] = useCopyToClipboard()
   const [confirmUI, confirm] = useConfirm()
   const [challengeSheet, setChallengeSheet] = useState(null) // 'create' | 'join'
 
@@ -262,10 +263,7 @@ function Main({ session }) {
           email={session.user.email}
           onNew={() => setBuilder({ program: null })}
           onEdit={(p) => setBuilder({ program: p })}
-          onExport={(p) => {
-            setCopied(false)
-            setExportText(buildExport(p, store.logs, store.statuses))
-          }}
+          onExport={(p) => setExportText(buildExport(p, store.logs, store.statuses))}
           onSignOut={() => supabase.auth.signOut()}
           onCreateChallenge={() => setChallengeSheet('create')}
           onJoinChallenge={() => setChallengeSheet('join')}
@@ -433,15 +431,7 @@ function Main({ session }) {
             </button>
             <button
               className="btn acc grow"
-              onClick={async () => {
-                try {
-                  await navigator.clipboard.writeText(exportText)
-                  setCopied(true)
-                  setTimeout(() => setCopied(false), 1800)
-                } catch {
-                  /* clipboard needs a secure context; the textarea is selectable as a fallback */
-                }
-              }}
+              onClick={() => copy(exportText)}
             >
               {copied ? 'Copied ✓' : 'Copy to clipboard'}
             </button>

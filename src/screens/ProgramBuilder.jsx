@@ -2,19 +2,10 @@
    Edits a local draft and commits once, so a half-built program never reaches
    the database. Rows carrying an id already exist; rows without one are new. */
 import { useState } from 'react'
-import { Icon, Sheet } from '../ui'
+import { Icon, Sheet, NumField } from '../ui'
 import { fmtRest, supersetGroupsFor } from '../lib/helpers'
 import { useConfirm } from '../lib/useConfirm'
 import ExerciseForm from './ExerciseForm'
-
-const KICKER = {
-  fontSize: 12,
-  color: 'var(--tx3)',
-  fontWeight: 700,
-  letterSpacing: 0.4,
-  textTransform: 'uppercase',
-  margin: '14px 2px 4px',
-}
 
 /** Flatten a stored program into the shape the builder edits. */
 function toDraft(program) {
@@ -52,9 +43,6 @@ export default function ProgramBuilder({ store, program, onClose, onSaved }) {
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
   const [confirmUI, confirm] = useConfirm()
-  // Kept as text so the field can be empty mid-edit. Coercing on every
-  // keystroke would rewrite a cleared box to "1" before you can type "12".
-  const [weeksText, setWeeksText] = useState(() => String(draft.weeks))
 
   const upd = (fn) =>
     setDraft((d) => {
@@ -173,28 +161,17 @@ export default function ProgramBuilder({ store, program, onClose, onSaved }) {
           />
         </div>
 
-        <div className="field" style={{ maxWidth: 150 }}>
-          <label htmlFor="pb-weeks">Length (weeks)</label>
-          <input
-            id="pb-weeks"
-            className="inp"
-            value={weeksText}
-            inputMode="numeric"
-            onChange={(e) => {
-              const raw = e.target.value.replace(/[^0-9]/g, '')
-              setWeeksText(raw)
-              const n = parseInt(raw, 10)
-              if (n >= 1 && n <= 52) upd((d) => (d.weeks = n))
-            }}
-            onBlur={() => {
-              const n = Math.max(1, Math.min(52, parseInt(weeksText, 10) || 1))
-              setWeeksText(String(n))
-              upd((d) => (d.weeks = n))
-            }}
-          />
-        </div>
+        <NumField
+          id="pb-weeks"
+          label="Length (weeks)"
+          value={draft.weeks}
+          onChange={(n) => upd((d) => (d.weeks = n))}
+          min={1}
+          max={52}
+          style={{ maxWidth: 150 }}
+        />
 
-        <div style={KICKER}>Days &amp; exercises</div>
+        <div className="kicker">Days &amp; exercises</div>
 
         {draft.days.map((day, di) => (
           <div key={day.id || `new-day-${di}`} className="exc" style={{ marginTop: 11, padding: '12px 13px' }}>

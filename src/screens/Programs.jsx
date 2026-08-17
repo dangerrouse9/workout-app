@@ -1,16 +1,7 @@
 /* Programs.jsx — the library tab: every program, with edit / export / delete. */
-import { useState } from 'react'
 import { Icon } from '../ui'
 import { useConfirm } from '../lib/useConfirm'
-
-const KICKER = {
-  fontSize: 12,
-  color: 'var(--tx3)',
-  fontWeight: 700,
-  letterSpacing: 0.4,
-  textTransform: 'uppercase',
-  margin: '16px 2px 8px',
-}
+import { useCopyToClipboard } from '../lib/useCopyToClipboard'
 
 function ChallengeCard({ challenge, memberCount, totalDays, isActive, isOwner, onOpen, onCopyCode, copied, onLeave }) {
   return (
@@ -70,7 +61,7 @@ export default function ProgramsScreen({
   onJoinChallenge,
 }) {
   const [confirmUI, confirm] = useConfirm()
-  const [copiedCode, setCopiedCode] = useState(null)
+  const [copiedCode, copy] = useCopyToClipboard()
 
   const myChallenges = store.challenges.filter((c) =>
     store.members.some((m) => m.challenge_id === c.id && m.user_id === store.userId),
@@ -83,16 +74,6 @@ export default function ProgramsScreen({
     if (mine) store.setProgram(mine.program_id)
   }
 
-  const copyCode = async (code) => {
-    try {
-      await navigator.clipboard.writeText(code)
-      setCopiedCode(code)
-      setTimeout(() => setCopiedCode(null), 1800)
-    } catch {
-      /* clipboard needs a secure context; the code is visible to read off anyway */
-    }
-  }
-
   return (
     <div className="scroll" style={{ paddingTop: 8 }}>
       {confirmUI}
@@ -100,18 +81,7 @@ export default function ProgramsScreen({
         <Icon n="plus" s={18} /> Create new program
       </button>
 
-      <div
-        style={{
-          fontSize: 12,
-          color: 'var(--tx3)',
-          fontWeight: 700,
-          letterSpacing: 0.4,
-          textTransform: 'uppercase',
-          margin: '16px 2px 8px',
-        }}
-      >
-        Your programs
-      </div>
+      <div className="kicker">Your programs</div>
 
       {store.programs.filter((p) => !store.challengeProgramIds.has(p.id)).map((p) => {
         const exCount = p.days.reduce((a, d) => a + d.exercises.length, 0)
@@ -199,7 +169,7 @@ export default function ProgramsScreen({
         )
       })}
 
-      <div style={KICKER}>Challenges</div>
+      <div className="kicker">Challenges</div>
 
       <div style={{ display: 'flex', gap: 9, marginBottom: 12 }}>
         <button className="btn grow" onClick={onCreateChallenge}>
@@ -235,7 +205,7 @@ export default function ProgramsScreen({
           copied={copiedCode === c.invite_code}
           isOwner={c.owner_id === store.userId}
           onOpen={() => openChallenge(c)}
-          onCopyCode={() => copyCode(c.invite_code)}
+          onCopyCode={() => copy(c.invite_code, c.invite_code)}
           onLeave={async () => {
             const owner = c.owner_id === store.userId
             const ok = await confirm(

@@ -3,7 +3,7 @@
    buddy's session reads exactly like your own instead of being squeezed into
    the corner of your input row. */
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Icon } from '../ui'
+import { Icon, DayBar } from '../ui'
 import { useLongPress } from '../lib/useLongPress'
 import {
   fmtRest,
@@ -50,6 +50,16 @@ function LpHint() {
       >
         <Icon n="x" s={15} />
       </button>
+    </div>
+  )
+}
+
+/** The "Logged today" line, rendered on both the editable and read-only card. */
+function LoggedOn({ date, reserve }) {
+  if (!date && !reserve) return null
+  return (
+    <div className={'logdate' + (date && isToday(date) ? ' today' : '')}>
+      {date ? `Logged ${isToday(date) ? 'today' : formatShortDate(date)}` : ''}
     </div>
   )
 }
@@ -230,13 +240,7 @@ function ExerciseCard({ store, ex, week, group, isChallenge, onMenu, onHistory, 
           onBlur={(e) => commit('note', e.target.value)}
         />
 
-        {(log.logged_on || isChallenge) && (
-          <div className={'logdate' + (log.logged_on && isToday(log.logged_on) ? ' today' : '')}>
-            {log.logged_on
-              ? `Logged ${isToday(log.logged_on) ? 'today' : formatShortDate(log.logged_on)}`
-              : ''}
-          </div>
-        )}
+        <LoggedOn date={log.logged_on} reserve={isChallenge} />
 
         {(rest > 0 || isTimed(ex)) && (
           <div className="go-row">
@@ -300,11 +304,7 @@ function BuddyCard({ ex, log, group }) {
         <div className="ro-var">{log?.variation || ''}</div>
         <div className="ro-note">{skipped ? 'Skipped' : log?.note || ''}</div>
 
-        <div className={'logdate' + (log?.logged_on && isToday(log.logged_on) ? ' today' : '')}>
-          {log?.logged_on
-            ? `Logged ${isToday(log.logged_on) ? 'today' : formatShortDate(log.logged_on)}`
-            : ''}
-        </div>
+        <LoggedOn date={log?.logged_on} reserve />
 
         {reservesTimerRow && <div className="ro-gorow" />}
       </div>
@@ -430,17 +430,7 @@ export default function LogScreen({ store, onMenu, onHistory, startTimer, startS
   return (
     <>
       {!isChallenge && (
-        <div className="daybar">
-          {program.days.map((d, i) => (
-            <button
-              key={d.id}
-              className={'pill' + (i === store.dayIdx ? ' on' : '')}
-              onClick={() => store.setDayIdx(i)}
-            >
-              {dayPill(d)}
-            </button>
-          ))}
-        </div>
+        <DayBar days={program.days} activeIndex={store.dayIdx} onSelect={store.setDayIdx} />
       )}
 
       <div className="weeknav">

@@ -1,6 +1,7 @@
 /* ui.jsx — icons + reusable primitives (Overlay, Sheet, Popup, Toggle, useLongPress).
    Ported from the prototype's ui.jsx. */
 import { useState, useEffect } from 'react'
+import { dayPill } from './lib/helpers'
 
 // ── icons (simple stroke shapes) ───────────────────────
 export function Icon({ n, s = 22, c = 'currentColor', sw = 2 }) {
@@ -164,5 +165,54 @@ export function Toggle({ on, onChange }) {
     <button className={'tg' + (on ? ' on' : '')} onClick={() => onChange(!on)}>
       <span className="tg-knob" />
     </button>
+  )
+}
+
+/** The day selector. Identical on Log and Progress, so it lives in one place. */
+export function DayBar({ days, activeIndex, onSelect }) {
+  return (
+    <div className="daybar">
+      {days.map((d, i) => (
+        <button
+          key={d.id}
+          className={'pill' + (i === activeIndex ? ' on' : '')}
+          onClick={() => onSelect(i)}
+        >
+          {dayPill(d)}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+/**
+ * A numeric field that can be empty while you type.
+ * Coercing on every keystroke rewrites a cleared box to the minimum, so you
+ * can never clear "8" to type "12".
+ */
+export function NumField({ id, label, value, onChange, min, max, hint, style }) {
+  const [text, setText] = useState(String(value))
+  return (
+    <div className="field" style={style}>
+      <label htmlFor={id}>{label}</label>
+      <input
+        id={id}
+        className="inp"
+        inputMode="numeric"
+        value={text}
+        onChange={(e) => {
+          const raw = e.target.value.replace(/[^0-9]/g, '')
+          setText(raw)
+          const n = parseInt(raw, 10)
+          if (n >= min && n <= max) onChange(n)
+        }}
+        onBlur={() => {
+          const n = Math.max(min, Math.min(max, parseInt(text, 10) || min))
+          setText(String(n))
+          onChange(n)
+        }}
+      />
+      {hint && <div className="field-hint">{hint}</div>}
+    </div>
   )
 }
