@@ -460,7 +460,7 @@ function Main({ session }) {
         onClose={() => setChallengeSheet(null)}
         programCount={store.programs.length}
         email={session.user.email}
-        onCreated={async ({ programId }) => {
+        onCreated={async ({ program_id: programId }) => {
           setChallengeSheet(null)
           await store.reload()
           store.setProgram(programId)
@@ -472,7 +472,7 @@ function Main({ session }) {
         onClose={() => setChallengeSheet(null)}
         programCount={store.programs.length}
         email={session.user.email}
-        onJoined={async ({ programId }) => {
+        onJoined={async ({ program_id: programId }) => {
           setChallengeSheet(null)
           await store.reload()
           store.setProgram(programId)

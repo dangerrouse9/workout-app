@@ -87,27 +87,14 @@ export async function leaveChallenge(challengeId) {
   if (error) throw error
 }
 
-/** Name yourself within a challenge. RLS restricts this to your own row. */
-export async function setChallengeDisplayName(challengeId, displayName) {
-  const userId = await uid()
-  const { error } = await supabase
-    .from('challenge_members')
-    .update({ display_name: displayName.trim() || null })
-    .eq('challenge_id', challengeId)
-    .eq('user_id', userId)
-  if (error) throw error
+/** Create a challenge and everything under it in one transaction. */
+export async function createChallenge(args) {
+  return unwrap(await supabase.rpc('create_challenge', args))
 }
 
-/** The structure behind an invite code, so a joiner can build their own copy. */
-export async function challengeTemplate(code) {
-  return unwrap(await supabase.rpc('challenge_template', { p_code: code.trim() }))
-}
-
-/** Enrol the caller's own program in a challenge. Returns the challenge id. */
-export async function joinChallenge(code, programId) {
-  return unwrap(
-    await supabase.rpc('join_challenge', { p_code: code.trim(), p_program_id: programId }),
-  )
+/** Join by code: the clone happens server-side, in one transaction. */
+export async function joinChallenge(args) {
+  return unwrap(await supabase.rpc('join_challenge_atomic', args))
 }
 
 /**
