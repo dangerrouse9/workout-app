@@ -5,6 +5,7 @@
 import { useState } from 'react'
 import { Icon, Sheet } from '../ui'
 import { createChallenge, joinChallenge } from '../lib/challenges'
+import { todayISO, formatShortDate } from '../lib/helpers'
 
 const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
@@ -65,6 +66,7 @@ export function CreateChallengeSheet({ open, onClose, programCount, email, onCre
   const [daysPerWeek, setDaysPerWeek] = useState(7)
   const [moves, setMoves] = useState([{ name: '', target: '' }])
   const [who, setWho] = useState(() => nameFromEmail(email))
+  const [startsOn, setStartsOn] = useState(todayISO)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
 
@@ -91,7 +93,7 @@ export function CreateChallengeSheet({ open, onClose, programCount, email, onCre
           is_superset: false,
         })),
       }))
-      const result = await createChallenge({ name, weeks, days }, programCount, who)
+      const result = await createChallenge({ name, weeks, days, startsOn }, programCount, who)
       onCreated(result)
     } catch (e) {
       setErr(e.message || String(e))
@@ -121,6 +123,21 @@ export function CreateChallengeSheet({ open, onClose, programCount, email, onCre
       </div>
 
       <NameField value={who} onChange={setWho} />
+
+      <div className="field">
+        <label htmlFor="ch-start">Starts on</label>
+        <input
+          id="ch-start"
+          className="inp"
+          type="date"
+          value={startsOn}
+          onChange={(e) => setStartsOn(e.target.value || todayISO())}
+        />
+        <div style={{ fontSize: 12, color: 'var(--tx3)', marginTop: 6, lineHeight: 1.45 }}>
+          Day 1 is {formatShortDate(startsOn) || 'this date'}. Everyone who joins gets the same
+          start, whenever they sign up.
+        </div>
+      </div>
 
       <div className="field-row">
         <NumField id="ch-weeks" label="Weeks" value={weeks} onChange={setWeeks} min={1} max={52} />

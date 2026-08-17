@@ -259,6 +259,7 @@ function ExerciseCard({ store, ex, week, group, isChallenge, onMenu, onHistory, 
 
 /** A buddy's card: identical layout, nothing editable, no timers. */
 function BuddyCard({ ex, log, group }) {
+  const reservesTimerRow = isTimed(ex)
   const skipped = isSkipped(log)
   return (
     <div
@@ -304,6 +305,8 @@ function BuddyCard({ ex, log, group }) {
             ? `Logged ${isToday(log.logged_on) ? 'today' : formatShortDate(log.logged_on)}`
             : ''}
         </div>
+
+        {reservesTimerRow && <div className="ro-gorow" />}
       </div>
     </div>
   )

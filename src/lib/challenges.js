@@ -22,15 +22,16 @@ function makeCode(length = 6) {
  * movement against its challenge slot.
  * @returns {string} the new program's id
  */
-async function materialise(challengeId, name, weeks, days, position) {
+async function materialise(challengeId, name, weeks, days, position, startsOn) {
   const program = await db.insert('programs', {
     name,
     description: 'Buddy challenge',
     weeks,
     position,
     // Anchors the ordinal slots to real dates, which is what lets a challenge
-    // say "Day 7 · Tue 23 Sep" and know which day is today.
-    starts_on: todayISO(),
+    // say "Day 7 · Tue 23 Sep" and know which day is today. Joiners inherit the
+    // creator's date, so Day 1 means the same calendar day for everyone.
+    starts_on: startsOn || todayISO(),
   })
 
   for (const [di, day] of days.entries()) {
@@ -75,9 +76,10 @@ async function materialise(challengeId, name, weeks, days, position) {
  */
 export async function createChallenge(draft, existingProgramCount = 0, displayName = '') {
   const code = makeCode()
+  const startsOn = draft.startsOn || todayISO()
   const challenge = await db.insert(
     'challenges',
-    { name: draft.name.trim(), weeks: draft.weeks, invite_code: code },
+    { name: draft.name.trim(), weeks: draft.weeks, invite_code: code, starts_on: startsOn },
     'owner_id',
   )
 
@@ -87,6 +89,7 @@ export async function createChallenge(draft, existingProgramCount = 0, displayNa
     draft.weeks,
     draft.days,
     existingProgramCount,
+    startsOn,
   )
   await db.joinChallenge(code, programId)
   await db.setChallengeDisplayName(challenge.id, displayName)
@@ -108,6 +111,7 @@ export async function joinChallenge(code, existingProgramCount = 0, displayName 
     template.weeks,
     template.days || [],
     existingProgramCount,
+    template.starts_on,
   )
   await db.joinChallenge(code, programId)
   await db.setChallengeDisplayName(template.challenge_id, displayName)

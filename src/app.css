@@ -323,6 +323,10 @@ textarea.inp{resize:vertical;min-height:64px;line-height:1.45;}
   color:var(--tx3);display:block;margin-bottom:2px;}
 .ro-v{font-size:17px;font-weight:600;color:var(--tx2);}
 .ro-empty{font-size:13px;color:var(--tx3);font-style:italic;padding:2px 0 4px;}
+/* Matches .go-row exactly. A timed exercise gives your card a Time-hold
+   button the buddy's card has no use for; without this the cards below it
+   drift apart and the two panes end up different total heights. */
+.ro-gorow{height:35px;margin-top:9px;}
 .ro-var{width:100%;margin-top:8px;border-radius:var(--r-sm);background:var(--bg);
   padding:9px 11px;font-size:13px;font-weight:600;color:var(--tx2);min-height:38px;}
 .ro-note{width:100%;margin-top:8px;border-radius:var(--r-sm);background:var(--bg);

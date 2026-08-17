@@ -216,8 +216,8 @@ export function useStore() {
   const linearDay = (week - 1) * daysPerWeek + dayIdx + 1
 
   const slotDate = useCallback(
-    (wk = week, di = dayIdx) => dateForSlot(program?.starts_on, wk, di, daysPerWeek),
-    [program?.starts_on, week, dayIdx, daysPerWeek],
+    (wk = week, di = dayIdx) => dateForSlot(program?.starts_on, wk, di),
+    [program?.starts_on, week, dayIdx],
   )
 
   /** Move forward or back one day, rolling over week boundaries. */
@@ -238,13 +238,14 @@ export function useStore() {
     const start = new Date(`${program.starts_on}T00:00:00`)
     const now = new Date(`${todayISO()}T00:00:00`)
     const offset = Math.round((now - start) / 86400000)
-    if (offset < 0 || offset >= totalDays) return false
-    patchView({
-      week: Math.floor(offset / daysPerWeek) + 1,
-      dayIdx: offset % daysPerWeek,
-    })
+    if (offset < 0) return false
+    // Weeks are seven days; a training week may not fill all of them.
+    const wk = Math.floor(offset / 7) + 1
+    const di = offset % 7
+    if (wk > program.weeks || di >= daysPerWeek) return false
+    patchView({ week: wk, dayIdx: di })
     return true
-  }, [program?.starts_on, totalDays, daysPerWeek, patchView])
+  }, [program?.starts_on, program?.weeks, daysPerWeek, patchView])
 
   /** The challenge the active program belongs to, if it is a challenge program. */
   const activeChallenge = useMemo(() => {

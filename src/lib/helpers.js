@@ -42,13 +42,15 @@ export function todayISO() {
 
 /**
  * The calendar date a slot falls on, given the program's start date.
- * Slots are ordinal (week 3, day 2 of 7); `starts_on` is what anchors them.
+ *
+ * A week is always seven calendar days, whatever the training week contains.
+ * Counting by days-per-week instead would compress "3 days a week for 2 weeks"
+ * into six consecutive dates, so week 2 would start the day after week 1.
  */
-export function dateForSlot(startsOn, week, dayIndex, daysPerWeek) {
+export function dateForSlot(startsOn, week, dayIndex) {
   if (!startsOn) return null
-  const offset = (week - 1) * daysPerWeek + dayIndex
   const d = new Date(`${startsOn}T00:00:00`)
-  d.setDate(d.getDate() + offset)
+  d.setDate(d.getDate() + (week - 1) * 7 + dayIndex)
   return d
 }
 
