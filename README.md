@@ -5,6 +5,26 @@ home screen as a PWA.
 
 Live at <https://workout-app-mu-amber.vercel.app>.
 
+## What it does
+
+- **Programs.** Build multi-week training programs with days, exercises, sets,
+  reps, rest times, and supersets. Edits are kept as a draft and saved in one
+  step, so a half-built program never reaches the database.
+- **Logging.** Today's session is the home screen. Log each set as you go, with a
+  rest countdown and a count-up timer for timed holds; the screen stays awake
+  while a timer runs so the alert can be heard.
+- **Progress.** A week-by-week strip for each exercise, for choosing the next
+  load.
+- **History.** Press and hold an exercise to see a trend line and timeline for
+  that movement across every program, not just the current one.
+- **Buddy challenges.** Start a challenge (the same movements every day, or a
+  shared training block), share an invite code, and see everyone's sessions side
+  by side. Each person keeps a private copy, and a buddy's numbers are read-only.
+- **Export.** Copy a program and its logged results as a ready-made prompt for
+  planning the next training block.
+- **Accounts.** Sign-in with password reset; installs to the iPhone home screen
+  as a PWA.
+
 ## The database is half the codebase
 
 **`migrations/` is not a historical record — it is source.** Read it alongside
@@ -62,6 +82,10 @@ src/
 ├── ui.jsx        primitives: icons, sheets, day bar, numeric field
 └── app.css       every style; ported from the design handoff
 ```
+
+`design_handoff_workout_app/` is the original design spec, prototype, and
+starter schema the app was built from. It is kept for reference and is not part
+of the build; the prototype needs a seed file that is deliberately not committed.
 
 Two rules worth keeping:
 
